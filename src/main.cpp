@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include <adc_16.hpp>
+#include <adc_16_interrupt.hpp>
 #include <oled_ssd1306.hpp>
 
 int main() {
@@ -8,5 +9,8 @@ int main() {
 	// OLED_SSD1306::main();
 
 	// ADC on Pin `A0`
-	ADC_16::main();
+	// ADC_16::main();
+
+	// ADC on Pin `A0` with Interrupt
+	ADC_16_Interrupt::main();
 }
