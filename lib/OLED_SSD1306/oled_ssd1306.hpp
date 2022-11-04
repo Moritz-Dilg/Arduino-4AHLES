@@ -75,8 +75,10 @@ void oled_write_P(const char* Buffer, ...);
 
 class OLED_SSD1306 {
    public:
+	static void init();
 	static void main();
-	static void print(char* text);
+	static void print(char* text, uint8_t x, uint8_t y);
+	static void printNumber(int number, uint8_t x, uint8_t y);
 };
 
 #endif	// __oled_H

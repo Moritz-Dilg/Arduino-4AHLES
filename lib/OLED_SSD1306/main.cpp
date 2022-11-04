@@ -1,9 +1,13 @@
 #include <oled_ssd1306.hpp>
 
-void OLED_SSD1306::main() {
+void OLED_SSD1306::init() {
 	DDRB |= (1 << PB5);
 	oled_init();
 	oled_gotoxy(0, 0);
+}
+
+void OLED_SSD1306::main() {
+	init();
 
 	while (1) {
 		for (uint32_t tmp = 1; tmp < 99999999; tmp++) {
@@ -23,7 +27,12 @@ void OLED_SSD1306::main() {
 	}
 }
 
-void OLED_SSD1306::print(char* text) {
-	oled_gotoxy(0, 0);
+void OLED_SSD1306::print(char* text, uint8_t x, uint8_t y) {
+	oled_gotoxy(x, y);
 	oled_write_str(text);
+}
+
+void OLED_SSD1306::printNumber(int number, uint8_t x, uint8_t y) {
+	oled_gotoxy(x, y);
+	oled_write("%4i", number);
 }
