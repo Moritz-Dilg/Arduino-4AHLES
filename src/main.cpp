@@ -1,5 +1,6 @@
 #include <Arduino.h>
 
+#include <LM75.hpp>
 #include <adc_16.hpp>
 #include <adc_16_interrupt.hpp>
 #include <oled_ssd1306.hpp>
@@ -12,5 +13,8 @@ int main() {
 	// ADC_16::main();
 
 	// ADC on Pin `A0` with Interrupt
-	ADC_16_Interrupt::main();
+	// ADC_16_Interrupt::main();
+
+	// LM75 temperature sensor on Pin D13
+	LM75::main();
 }

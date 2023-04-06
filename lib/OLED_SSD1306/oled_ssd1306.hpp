@@ -15,6 +15,8 @@
 #include <string.h>
 #include <util/delay.h>
 
+#include <i2c.hpp>
+
 #define SDA_PIN PC4
 #define SCL_PIN PC5
 #define I2C_PORT PORTC

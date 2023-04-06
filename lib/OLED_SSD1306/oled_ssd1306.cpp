@@ -27,51 +27,9 @@ const uint8_t ssd1306_init_cmd[] PROGMEM = {
 	SET_DISPLAY_ON};
 
 //***************************************************************************************
-void i2c_init(void) {
-	I2C_PORT |= (1 << SDA_PIN | 1 << SCL_PIN);	// Port Pullup
-	TWCR = 0;
-	TWSR = 0;
-	TWBR = ((F_CPU / SCL_CLOCK) - 16) / 2;
-	_delay_ms(50);
-}
-
-//***************************************************************************************
-uint8_t i2c_start(void) {
-	uint8_t timeout = 0;
-	TWCR = (1 << TWINT | 1 << TWSTA | 1 << TWEN);
-	while (!(TWCR & (1 << TWINT))) {
-		if ((timeout++) > 100) return 1;
-	}
-	TWDR = OLED_I2C_ADDR;
-	TWCR = (1 << TWINT | 1 << TWEN);
-	timeout = 0;
-	while (!(TWCR & (1 << TWINT))) {
-		if ((timeout++) > 100) return 1;
-	}
-	return 0;
-}
-
-//***************************************************************************************
-uint8_t i2c_byte(uint8_t byte) {
-	uint8_t timeout = 0;
-	TWDR = byte;
-	TWCR = (1 << TWINT | 1 << TWEN);
-	while (!(TWCR & (1 << TWINT))) {
-		if ((timeout++) > 100) return 1;
-	}
-	return 0;
-}
-
-//***************************************************************************************
-void i2c_stop(void) {
-	TWCR = (1 << TWINT | 1 << TWSTO | 1 << TWEN);
-	TWCR = 0;
-}
-
-//***************************************************************************************
 void oled_init(void) {
 	i2c_init();
-	i2c_start();
+	i2c_start(OLED_I2C_ADDR);
 	i2c_byte(COMMAND);
 	for (uint8_t tmp = 0; tmp < sizeof(ssd1306_init_cmd); tmp++) {
 		i2c_byte(pgm_read_byte(&ssd1306_init_cmd[tmp]));
@@ -83,7 +41,7 @@ void oled_init(void) {
 //***************************************************************************************
 void oled_clear_screen(void) {
 	oled_gotoxy(0, 0);
-	i2c_start();
+	i2c_start(OLED_I2C_ADDR);
 	i2c_byte(DATA);
 	for (uint16_t i = 0; i < 128 << 4; i++) {  // 128 * (64 / Byte)
 		i2c_byte(0);
@@ -96,7 +54,7 @@ void oled_clear_screen(void) {
 void oled_gotoxy(uint8_t x, uint8_t y) {
 	oled_x = x;
 	oled_y = y;
-	i2c_start();
+	i2c_start(OLED_I2C_ADDR);
 	i2c_byte(COMMAND);
 	i2c_byte(SET_PAGE_START | y);
 	i2c_byte(SET_COLUMN_ADDRESS);
@@ -113,7 +71,7 @@ void oled_write_char(char c) {
 	if (font_size != 0) {
 		uint8_t tmp = 0;
 		oled_gotoxy(oled_x, oled_y);
-		i2c_start();
+		i2c_start(OLED_I2C_ADDR);
 		i2c_byte(DATA);
 		for (uint8_t count = 0; count < 8; count++) {
 			tmp = pgm_read_byte(&font[(unsigned char)c][count]);
@@ -125,7 +83,7 @@ void oled_write_char(char c) {
 		}
 		i2c_stop();
 		oled_gotoxy(oled_x, oled_y + 1);
-		i2c_start();
+		i2c_start(OLED_I2C_ADDR);
 		i2c_byte(DATA);
 		for (uint8_t count = 0; count < 8; count++) {
 			tmp = pgm_read_byte(&font[(unsigned char)c][count]);
@@ -140,7 +98,7 @@ void oled_write_char(char c) {
 		oled_y -= 1;
 	} else {
 		oled_gotoxy(oled_x, oled_y);
-		i2c_start();
+		i2c_start(OLED_I2C_ADDR);
 		i2c_byte(DATA);
 		for (uint8_t count = 0; count < 8; count++) {
 			i2c_byte(pgm_read_byte(&font[(unsigned char)c][count]));
